@@ -1,0 +1,64 @@
+<?php
+
+namespace NoxLogic\AppBundle\Controller;
+
+use NoxLogic\AppBundle\Entity\User;
+use NoxLogic\AppBundle\Form\Type\RepoFormType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+
+class UserController extends Controller
+{
+
+    /**
+     * Displays main user page
+     *
+     * @param Request $request
+     * @param User $user
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @ParamConverter("user", options={ "mapping" : { "user" : "username" } })
+     */
+    public function indexAction(Request $request, User $user)
+    {
+        return $this->render('NoxLogicAppBundle:User:index.html.twig', array(
+            'user' => $user,
+        ));
+    }
+
+    /**
+     * Displays settings page for logged in user
+     *
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function settingsAction(Request $request)
+    {
+        $user = $this->getUser();
+
+        return $this->render('NoxLogicAppBundle:User:settings.html.twig', array(
+            'user' => $user,
+        ));
+    }
+
+    /**
+     * Display new repository page for user.
+     *
+     * @param Request $request
+     * @param User $user
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @ParamConverter("user", options={ "mapping" : { "user" : "username" } })
+     */
+    public function newRepositoryAction(Request $request, User $user)
+    {
+        $form = $this->createform(new RepoFormType());
+
+        return $this->render('NoxLogicAppBundle:User:newRepository.html.twig', array(
+            'user' => $user,
+            'repo_form' => $form->createView()
+        ));
+    }
+
+}

@@ -1,0 +1,35 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}{{ user.username }} - {{ user.realname }}{% endblock %}
+
+{% block body %}
+
+    <div class="row">
+        <div class="col-sm-12">
+
+            <h3>{{ user.username }} ({{ user.email }})</h3>
+            <p>{{ user.realname }}</p>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Create a new repository</h3>
+                    </div>
+                    <div class="panel-body">
+                        {{ form_start(repo_form) }}
+                        {{ form_row(repo_form) }}
+
+                        <button type="submit" class="btn btn-success">Create repository</button>
+                        {{ form_end(repo_form) }}
+                    </div>
+                </div>
+
+        </div>
+    </div>
+
+{% endblock %}

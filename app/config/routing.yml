@@ -1,0 +1,6 @@
+fos_user:
+    resource: "@FOSUserBundle/Resources/config/routing/all.xml"
+
+noxlogic_app:
+    resource: "@NoxLogicAppBundle/Resources/config/routing.yml"
+    prefix:   /

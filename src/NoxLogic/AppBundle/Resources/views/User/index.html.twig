@@ -1,0 +1,69 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}{{ user.username }} - {{ user.realname }}{% endblock %}
+
+{% block body %}
+
+    <div class="row">
+        <div class="col-sm-12">
+
+            <h3>{{ user.username }} ({{ user.email }})</h3>
+            <p>{{ user.realname }}</p>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+
+            <h3>Repositories<a href="{{ path('user_new_repo', { user: user }) }}" class="pull-right btn-sm btn btn-success"><i class="fa fa-plus"></i> New repository</a></h3>
+
+    <table class="table table-bordered table-striped table-hover table-condensed">
+        <thead>
+        <tr>
+            <th>Visibility</th>
+            <th>Repository</th>
+            <th>Last commit</th>
+            <th>Permissions</th>
+        </tr>
+        </thead>
+        <tbody>
+
+{% for right in user.rights %}
+        <tr>
+            <td class="col-xs-1">
+                {% if random(10) > 5 %}
+                    <span class="label label-primary">private</span>
+                {% else %}
+                    <span class="label label-success">public</span>
+                {% endif %}
+            </td>
+            <td class="col-xs-6">
+                <a href={{ path("repo", { user: right.repository.owner.username, repo: right.repository.name }) }}>{{ right.repository.name }}</a><br>
+                {{ right.repository.description }}
+            </td>
+            <td class="col-xs-2">
+                {{ "now"|date("c") }}
+            </td>
+            <td class="col-xs-3">
+                {% if right.repository.owner == user %}
+                    <span class="label label-success">OWNER</span>
+                {% endif %}
+                {% if right.right == "PUSH" %}
+                    <span class="label label-success">PUSH</span>
+                    <span class="label label-success">FETCH</span>
+                {% endif %}
+                {% if right.right == "FETCH" %}
+                    <span class="label label-success">FETCH</span>
+                {% endif %}
+            </td>
+        </tr>
+{% endfor %}
+
+        </tbody>
+    </table>
+
+    </div>
+</div>
+
+{% endblock %}

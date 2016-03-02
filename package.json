@@ -1,0 +1,9 @@
+{
+    "name": "gitstash",
+    "version": "0.0.1",
+    "private": true,
+    "description": "Gitstash",
+    "devDependencies": {
+        "bower": "~1.7.0"
+    }
+}

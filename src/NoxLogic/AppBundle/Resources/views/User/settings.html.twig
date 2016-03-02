@@ -1,0 +1,23 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}Settings {{ user.username }}{% endblock %}
+
+{% block body %}
+
+    <h1>Settings</h1>
+
+    {{ dump(user) }}
+
+    <h1>SSH Keys</h1>
+
+    <table class="table table-bordered table-responsive table-striped">
+{% for key in user.sshKeys %}
+        <tr>
+            <td>{{ key.fingerprint }}</td>
+            <td><button class="btn btn-xs btn-danger">Remove key</button></td>
+        </tr>
+{% endfor %}
+    </table>
+    <button class="btn btn-xs btn-success">Add new SSH key</button>
+
+{% endblock %}

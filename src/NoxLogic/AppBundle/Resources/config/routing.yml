@@ -1,0 +1,29 @@
+home:
+    path:     /
+    defaults: { _controller: NoxLogicAppBundle:Default:index }
+
+user_settings:
+    path:     /settings
+    defaults: { _controller: NoxLogicAppBundle:User:settings }
+
+user:
+    path:     /user:{user}
+    defaults: { _controller: NoxLogicAppBundle:User:index }
+
+user_new_repo:
+    path:     /user:{user}/new
+    defaults: { _controller: NoxLogicAppBundle:User:newRepository }
+
+repo:
+    path:     /repo:{user}/{repo}
+    defaults: { _controller: NoxLogicAppBundle:Repo:index }
+
+repo_tree:
+    path:     /repo:{user}/{repo}/tree:{branch}/path:{path}
+    defaults: { _controller: NoxLogicAppBundle:Repo:tree }
+    requirements: { "path": ".+" }
+
+repo_tree_view:
+    path:     /repo:{user}/{repo}/branch:{branch}/view:{path}
+    defaults: { _controller: NoxLogicAppBundle:Repo:view }
+    requirements: { "path": ".+" }

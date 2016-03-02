@@ -1,0 +1,5 @@
+services:
+    # Generic git service factory that can generate Git Services, as they are instantiated per repository
+    git_service_factory:
+        class: NoxLogic\AppBundle\Service\GitServiceFactory
+        arguments: [ "%git_repo_path%" ]
