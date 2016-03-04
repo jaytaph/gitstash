@@ -32,7 +32,7 @@
 {% for right in user.rights %}
         <tr>
             <td class="col-xs-1">
-                {% if random(10) > 5 %}
+                {% if right.repository.private %}
                     <span class="label label-primary">private</span>
                 {% else %}
                     <span class="label label-success">public</span>
@@ -47,7 +47,7 @@
             </td>
             <td class="col-xs-3">
                 {% if right.repository.owner == user %}
-                    <span class="label label-success">OWNER</span>
+                    <span class="label label-info">OWNER</span>
                 {% endif %}
                 {% if right.right == "PUSH" %}
                     <span class="label label-success">PUSH</span>

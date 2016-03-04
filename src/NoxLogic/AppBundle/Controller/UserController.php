@@ -2,6 +2,7 @@
 
 namespace NoxLogic\AppBundle\Controller;
 
+use NoxLogic\AppBundle\Entity\Repository;
 use NoxLogic\AppBundle\Entity\User;
 use NoxLogic\AppBundle\Form\Type\RepoFormType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -53,7 +54,19 @@ class UserController extends Controller
      */
     public function newRepositoryAction(Request $request, User $user)
     {
-        $form = $this->createform(new RepoFormType());
+        $repo = new Repository();
+        $form = $this->createform(new RepoFormType(), $repo);
+
+        $form->handleRequest($request);
+        if ($form->isValid()) {
+            // Create repository
+            $repositoryService = $this->get('repo_service');
+            $result = $repositoryService->create($user, $repo);
+
+            if ($result) {
+                $this->redirect($this->generateUrl('user', array('user' => $user)));
+            }
+        }
 
         return $this->render('NoxLogicAppBundle:User:newRepository.html.twig', array(
             'user' => $user,

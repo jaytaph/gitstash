@@ -161,16 +161,19 @@ class Git {
         }
 
         // Add packed refs
-        $refs = file($this->path . "/packed-refs");
-        foreach ($refs as $line) {
-            $line = trim($line);
-            if ($line[0] == '#') continue;
-            list($sha, $ref) = explode(" ", $line, 2);
+        $path = $this->path . "/packed-refs";
+        if (is_readable($path)) {
+            $refs = file($path);
+            foreach ($refs as $line) {
+                $line = trim($line);
+                if ($line[0] == '#') continue;
+                list($sha, $ref) = explode(" ", $line, 2);
 
-            $a = explode('/', $ref);
-            $a = array_splice($a, 2);
-            $ref = join('/', $a);
-            $ret[$ref] = $sha;
+                $a = explode('/', $ref);
+                $a = array_splice($a, 2);
+                $ref = join('/', $a);
+                $ret[$ref] = $sha;
+            }
         }
 
         // Sort refs
@@ -215,26 +218,5 @@ class Git {
 
         throw new InvalidArgumentException('Ref $wantedRef not found in packed refs');
     }
-
-//    /**
-//     * @return mixed
-//     */
-//    function getHead() {
-//        $head = trim(file_get_contents($this->path . "/HEAD"));
-//        $head = explode(": ", $head, 2);
-//
-//        // Fetch path
-//        $path = $this->path . "/" . $head[1];
-//
-//        if (file_exists($path)) {
-//            // regular ref
-//            $sha = trim(file_get_contents($path));
-//        } else {
-//            // packed ref
-//            $sha = $this->findPackedRef($head[1]);
-//        }
-//
-//        return $this->fetchSha($sha);
-//    }
 
 }

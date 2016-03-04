@@ -36,7 +36,7 @@ class AuthorizedKeys
      */
     private $fingerprint;
 
-    /**s
+    /**
      * @var User
      *
      * @ORM\ManyToOne(targetEntity="NoxLogic\AppBundle\Entity\User", inversedBy="sshKeys")

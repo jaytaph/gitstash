@@ -3,3 +3,7 @@ services:
     git_service_factory:
         class: NoxLogic\AppBundle\Service\GitServiceFactory
         arguments: [ "%git_repo_path%" ]
+
+    repo_service:
+        class: NoxLogic\AppBundle\Service\RepoService
+        arguments: [ @doctrine, "%git_repo_path%" ]

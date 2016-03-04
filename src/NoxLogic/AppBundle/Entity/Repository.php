@@ -45,9 +45,16 @@ class Repository
     /**
      * @var string Small description of the repository
      *
-     * @ORM\COlumn(name="description", type="string", length=255)
+     * @ORM\Column(name="description", type="string", length=255)
      */
     protected $description;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="private", type="boolean")
+     */
+    protected $private;
 
 
     /**
@@ -168,5 +175,32 @@ class Repository
     public function getOwner()
     {
         return $this->owner;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isPrivate()
+    {
+        return $this->private;
+    }
+
+    /**
+     * @param boolean $private
+     */
+    public function setPrivate($private)
+    {
+        $this->private = $private;
+    }
+
+
+    /**
+     * Get private
+     *
+     * @return boolean 
+     */
+    public function getPrivate()
+    {
+        return $this->private;
     }
 }

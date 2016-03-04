@@ -7,6 +7,26 @@
     <h3>Repo name: {{ repo.name }}</h3>
     <h4>Repo description: {{ repo.description }}</h4>
 
+
+{% if git.branches|length == 0 %}
+
+    <div class="well">
+        <h3>Empty repository</h3>
+
+        <b>Usage:</b>
+        <pre>
+$ git clone git@gitstash.io/user/repo.git
+
+$ touch README.md
+$ git add README.md
+$ git commit -m "initial commit"
+$ git push origin master
+        </pre>
+
+    </div>
+
+{% else %}
+
     <h2>Branches</h2>
 
     <form class="form-inline">
@@ -26,8 +46,7 @@
     <h2>Tags</h2>
     {{ dump(git.tags) }}
 
-    <h2>HEAD commit</h2>
-    {{ dump(git.head) }}
+{% endif %}
 
 {% endblock %}
 
