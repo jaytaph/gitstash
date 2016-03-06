@@ -11,19 +11,19 @@ user:
     defaults: { _controller: NoxLogicAppBundle:User:index }
 
 user_new_repo:
-    path:     /user:{user}/new
+    path:     "/user:{user}/new"
     defaults: { _controller: NoxLogicAppBundle:User:newRepository }
 
 repo:
-    path:     /repo:{user}/{repo}
+    path:     "/user:{user}/repo:{repo}"
     defaults: { _controller: NoxLogicAppBundle:Repo:index }
 
 repo_tree:
-    path:     /repo:{user}/{repo}/tree:{branch}/path:{path}
+    path:     "/user:{user}/repo:{repo}/tree:{tree}/path:{path}"
     defaults: { _controller: NoxLogicAppBundle:Repo:tree }
     requirements: { "path": ".+" }
 
 repo_tree_view:
-    path:     /repo:{user}/{repo}/branch:{branch}/view:{path}
+    path:     "/user:{user}/repo:{repo}/tree:{tree}/path:{path}/view"
     defaults: { _controller: NoxLogicAppBundle:Repo:view }
     requirements: { "path": ".+" }

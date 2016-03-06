@@ -7,7 +7,6 @@
     <h3>Repo name: {{ repo.name }}</h3>
     <h4>Repo description: {{ repo.description }}</h4>
 
-
 {% if git.branches|length == 0 %}
 
     <div class="well">
@@ -32,19 +31,21 @@ $ git push origin master
     <form class="form-inline">
         <div class="form-group">
             <label for="branch_select">Select branch:</label>
-            <select id="branch_select" class="form-control">
+            <select id="branch_select" class="input-sm form-control">
             {% for name, sha in git.branches %}
-                <option data-href="{{ path('repo_branch', { 'user' : repo.owner.username, 'repo' : repo.name, 'branch' : name }) }}">{{ name }}</option>
+                <option data-href="{{ path('repo_tree', { 'user' : repo.owner.username, 'repo' : repo.name, 'tree' : name, 'path' : '/' }) }}">{{ name }}</option>
             {% endfor %}
             </select>
         </div>
         <div class="form-group">
-            <button id="branch_submit" class="form-control btn btn-success btn-xs">Go <i class="fa fa-play"></i></button>
+            <button id="branch_submit" class="input-sm form-control btn btn-success btn-xs">Go <i class="fa fa-play"></i></button>
         </div>
     </form>
 
     <h2>Tags</h2>
-    {{ dump(git.tags) }}
+    {% for tag,sha in git.tags %}
+        <span class="label label-info">{{ tag }}</span>
+    {% endfor %}
 
 {% endif %}
 

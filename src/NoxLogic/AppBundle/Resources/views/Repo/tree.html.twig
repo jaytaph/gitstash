@@ -15,8 +15,7 @@
                     <label for="branch">Select branch:</label>
                     <select id="branch_select" class="input-sm form-control">
                     {% for name, sha in git.branches %}
-                        {% set p = "/" %}
-                        <option data-href="{{ path('repo_tree', { 'user' : repo.owner.username, 'repo' : repo.name, 'tree' : name, 'path' : p }) }}">{{ name }}</option>
+                        <option data-href="{{ path('repo_tree', { 'user' : repo.owner.username, 'repo' : repo.name, 'tree' : name, 'path' : "/" }) }}">{{ name }}</option>
                     {% endfor %}
                     </select>
                     <button id="branch_submit" class="form-control btn btn-success btn-xs input-sm">Go <i class="fa fa-play"></i></button>
@@ -60,7 +59,7 @@
         </tr>
         {% endif %}
 
-    {% for item in git.treeInfo(branch, path|join("/")) %}
+    {% for item in git.treeInfo(commit, path|join("/")) %}
          <tr><td>
             {% set p = path | join("/") %}
             {% if p == "/" %}
@@ -76,7 +75,7 @@
         </td>
              <td>{{ item.commit_log }}</td>
              <td><a href="#">{{ item.sha | slice(0, 8)}}</a></td>
-             <td><time class="timeago" datetime="{{ item.date|date("c") }}">{{ item.date|date("c") }} {{ item.date|date("Y M d H:i:s") }}</time></td>
+             <td><time class="timeago" datetime="{{ item.commit_date|date("c") }}">{{ item.commit_date|date("c") }} {{ item.commit_date|date("Y M d H:i:s") }}</time></td>
          </tr>
     {% endfor %}
     </table>

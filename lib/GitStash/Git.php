@@ -166,12 +166,20 @@ class Git {
             $refs = file($path);
             foreach ($refs as $line) {
                 $line = trim($line);
+
+                // Comment
                 if ($line[0] == '#') continue;
+
+                // Annotated tag. Information is found in the previous line as well, so we don't do anything with it
+                if ($line[0] == '^') continue;
+
+
                 list($sha, $ref) = explode(" ", $line, 2);
 
                 $a = explode('/', $ref);
                 $a = array_splice($a, 2);
                 $ref = join('/', $a);
+
                 $ret[$ref] = $sha;
             }
         }

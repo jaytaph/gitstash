@@ -61,6 +61,11 @@ class GitService {
         return $this->git->refToSha($ref);
     }
 
+    function fetchObject($sha)
+    {
+        return $this->git->fetchObject($sha);
+    }
+
     /**
      * Get a blob from a given file from a given tree sha
      *
@@ -133,79 +138,6 @@ class GitService {
     }
 
     /**
-     * @param $sha
-     * @return array
-     */
-    function getTreeInfo2($sha, $path = "/")
-    {
-        $parentCommit = $this->git->fetchObject($sha);
-
-        $files = array();
-        $first = true;
-
-        while ($parentCommit) {
-            $tree = $this->git->fetchObject($parentCommit->getTree());
-
-            // First, we need to browse the tree to the correct spot based on path
-            $pathArray = array_filter(explode("/", trim($path, '/')));
-            while (count($pathArray)) {
-                $dir = array_shift($pathArray);
-
-                $tree = isset($tree[$dir]) ? $this->git->fetchObject($tree[$dir]->getSha()) : array();
-            }
-
-            foreach ($tree as $item) {
-                /* @var TreeItem $item */
-                if (!isset($files[$item->getName()])) {
-                    // File was not found
-                    if ($first) {
-                        // Only add the files found at the HEAD commit, otherwise we display deleted files
-                        $files[$item->getName()] = array(
-                            'item' => $item,
-                            'name' => $item->getName(),
-                            'sha' => $item->getSha(),
-                            'commit_sha' => $parentCommit->getSha(),
-                            'commit_log' => $parentCommit->getLog(),
-                            'date' => $parentCommit->getDate(),
-                        );
-                    }
-                } else {
-                    // If the file was found, and the SHA is the same, we "trickle" down the commit log message. As soon as
-                    // the sha is not equal anymore, we know the file has been changed in that commit
-
-                    // @TODO: What about files that change multiple times? Does this setup still work?
-                    if ($files[$item->getName()]['sha'] == $item->getSha()) {
-                        $files[$item->getName()] = array(
-                                'item' => $item,
-                                'name' => $item->getName(),
-                                'sha' => $item->getSha(),
-                                'commit_sha' => $parentCommit->getSha(),
-                                'commit_log' => $parentCommit->getLog(),
-                                'date' => $parentCommit->getDate(),
-                        );
-                    }
-                }
-            }
-
-            $first = false;
-
-            $parentCommit = $parentCommit->getParent() ? $this->git->fetchObject($parentCommit->getParent()) : null;
-        }
-
-        // Sort files on directory first, name next
-        uasort($files, function ($a, $b) {
-            if ($a['item']->getPerm() == $b['item']->getPerm()) {
-                return $a['name'] > $b['name'];
-            }
-
-            return $a['item']->getPerm() > $b['item']->getPerm();
-        });
-
-        return $files;
-    }
-
-
-    /**
      * Based on a branch and path, get its tree
      *
      * This will return the tree based on the base branch (ie: master) and path ("/src/foo/bar.php")
@@ -264,18 +196,17 @@ class GitService {
      * This is a difficult setup, as we need to parse all parents (@TODO: what about multiple parents?), and we need to
      * parse trees, when the file is not in the root of the commit.
      *
-     * Futhermore, we must keep in track of each sha for each file to detect if the given commit has changed the file
+     * Furthermore, we must keep in track of each sha for each file to detect if the given commit has changed the file
      * or not. Unfortunately, it seems that git doesn't store this information very efficiently, so it might be wise
      * to come up with a more performant system, and maybe slap on some caching here and there as well.
      *
      * @param $sha
      * @return array
      */
-    function getTreeInfo($sha, $path = "/")
+    function getTreeInfo(Commit $commit, $path = "/")
     {
         // Fetch tree for given path in the initial SHA
-        $commit = $this->git->fetchObject($sha);
-        $mainTree = $this->getTreeFromShaPath($sha, $path);
+        $mainTree = $this->getTreeFromShaPath($commit->getSha(), $path);
 
         // These are all the files that needs to be checked.
         $todo = array();
@@ -299,8 +230,8 @@ class GitService {
         // Iterate until we run out of commits
         while ($commit) {
             // Fetch tree for given commit
-            $sha = $this->git->fetchObject($commit->getTree());
-            $tree = $this->getTreeFromShaPath($sha, $path);
+            $rootTree = $this->git->fetchObject($commit->getTree());
+            $tree = $this->getTreeFromShaPath($rootTree->getSha(), $path);
 
 //            // First, we need to browse the tree to the correct spot based on path
 //            $pathArray = array_filter(explode("/", trim($path, '/')));

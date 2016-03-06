@@ -16,7 +16,7 @@
                     <select id="branch_select" class="input-sm form-control">
                     {% for name, sha in git.branches %}
                         {% set p = "/" %}
-                        <option data-href="{{ path('repo_branch', { 'user' : repo.owner.username, 'repo' : repo.name, 'branch' : name, 'path' : p }) }}">{{ name }}</option>
+                        <option data-href="{{ path('repo_tree', { 'user' : repo.owner.username, 'repo' : repo.name, 'tree' : name, 'path' : p }) }}">{{ name }}</option>
                     {% endfor %}
                     </select>
                     <button id="branch_submit" class="form-control btn btn-success btn-xs input-sm">Go <i class="fa fa-play"></i></button>

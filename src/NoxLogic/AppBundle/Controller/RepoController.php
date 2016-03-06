@@ -38,6 +38,8 @@ class RepoController extends Controller
      *
      * @param Request $request
      * @param Repository $repo
+     * @param string $tree (ie: master)
+     * @param string $path (ie: /)
      * @return \Symfony\Component\HttpFoundation\Response
      *
      * @ParamConverter("repo", options={
@@ -54,6 +56,7 @@ class RepoController extends Controller
             'repo' => $repo,
             'git' => $gitService,
             'tree' => $gitService->getTreeFromBranchPath($tree, $path),
+            'commit' => $gitService->fetchObject($gitService->refToSha($tree)),
             'branch' => $tree,
             'path' => explode("/", $path),
         ));
@@ -64,6 +67,8 @@ class RepoController extends Controller
      *
      * @param Request $request
      * @param Repository $repo
+     * @param string $tree (ie: master)
+     * @param string $path (ie: /)
      * @return \Symfony\Component\HttpFoundation\Response
      *
      * @ParamConverter("repo", options={
