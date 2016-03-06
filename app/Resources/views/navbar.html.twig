@@ -14,10 +14,12 @@
 {% if app.user %}
                 <li><a href="{{ path('user', { user: app.user }) }}">Repositories</a></li>
                 <li><a href="{{ path('user_settings') }}">Settings</a></li>
-                <li><img class="img-rounded"  style="margin-top: 5px;" src="{{ gravatar(app.user.email, 30) }}" /></li>
                 <li><a href="{{ path('fos_user_security_logout') }}">Logout</a></li>
+                <li class="divider-vertical"></li>
+                <li><span class="navbar-text">{{ app.user }}</span> <img class="img-rounded"  style="margin-top: 15px;" src="{{ gravatar(app.user.email, 30) }}" /></li>
 {% else %}
                 <li><a href="{{ path('fos_user_security_login') }}">Login</a></li>
+                <li><a href="{{ path('fos_user_registration_register') }}">Register</a></li>
 {% endif %}
             </ul>
         </div>
