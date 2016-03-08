@@ -7,37 +7,54 @@
     <h3>{{ repo.name }}</h3>
     <h4>{{ repo.description }}</h4>
 
-    <div class="row">
+    <div class="row well-sm">
         <div class="col-sm-4">
 
             <form class="form-inline">
                 <div class="form-group">
-                    <label for="branch">Select branch:</label>
+                    <label for="branch">Branch:</label>
                     <select id="branch_select" class="input-sm form-control">
                     {% for name, sha in git.branches %}
-                        <option data-href="{{ path('repo_tree', { 'user' : repo.owner.username, 'repo' : repo.name, 'tree' : name, 'path' : "/" }) }}">{{ name }}</option>
+
+                        <option {% if name == branch %}selected{% endif %} data-href="{{ path('repo_tree', { 'user' : repo.owner.username, 'repo' : repo.name, 'tree' : name, 'path' : "/" }) }}">{{ name }}</option>
                     {% endfor %}
                     </select>
                     <button id="branch_submit" class="form-control btn btn-success btn-xs input-sm">Go <i class="fa fa-play"></i></button>
                 </div>
             </form>
-
         </div>
         <div class="col-sm-4">
-
-            <ul class="breadcrumb">
-              Path:
-              {#<li>&nbsp;</li>#}
-{% for element in path %}
-              <li {% if loop.last %}class="active"{% endif %}><a href="#">{{ element }}</a></li>
-{% endfor %}
-            </ul>
-
+            <form class="form-inline">
+                <div class="form-group">
+                    <label for="tag">Tag:</label>
+                    <select id="tag_select" class="input-sm form-control">
+                    {% for name, sha in git.tags %}
+                        <option {% if name == branch %}selected{% endif %} data-href="{{ path('repo_tree', { 'user' : repo.owner.username, 'repo' : repo.name, 'tree' : name, 'path' : "/" }) }}">{{ name }}</option>
+                    {% endfor %}
+                    </select>
+                    <button id="tag_submit" class="form-control btn btn-success btn-xs input-sm">Go <i class="fa fa-play"></i></button>
+                </div>
+            </form>
         </div>
 
         <div class="col-sm-4">
             <a href="#" class="pull-right btn btn-info btn-sm"><i class="fa fa-balance-scale"></i> BSD 3</a>
         </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <ul class="breadcrumb">
+              Path:
+{% for element in path %}
+              <li {% if loop.last %}class="active"{% endif %}><a href="#">{{ element }}</a></li>
+{% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="row well-sm">
+
     </div>
 
     <div class="row">
@@ -62,15 +79,15 @@
     {% for item in git.treeInfo(commit, path|join("/")) %}
          <tr><td>
             {% set p = path | join("/") %}
-            {% if p == "/" %}
-            {% set p = p ~ item.name %}
-            {% else %}
-            {% set p = p ~ "/" ~ item.name %}
-            {% endif %}
             {% if item.item.isDir %}
+                {% if p == "/" %}
+                    {% set p = p ~ item.name %}
+                {% else %}
+                    {% set p = p ~ "/" ~ item.name %}
+                {% endif %}
                 <i class="fa fa-folder-o"></i> <a href="{{ path('repo_tree', { user: repo.owner.username, repo:repo.name, tree: branch, path: p }) }}">{{ item.name }}</a>
             {% else %}
-                <i class="fa fa-file-o"></i> <a href="{{ path('repo_tree_view', { user: repo.owner.username, repo:repo.name, tree: branch, path: p }) }}">{{ item.name }}</a>
+                <i class="fa fa-file-o"></i> <a href="{{ path('repo_blob_view', { user: repo.owner.username, repo:repo.name, tree: branch, path: p, file: item.name }) }}">{{ item.name }}</a>
             {% endif %}
         </td>
              <td>{{ item.commit_log }}</td>
@@ -112,6 +129,12 @@
                window.location = $('#branch_select option:selected').data('href');
                e.preventDefault();
            });
+
+            $('#tag_submit').click(function (e) {
+                window.location = $('#tag_select option:selected').data('href');
+                e.preventDefault();
+            });
+
         });
     </script>
 {% endblock %}

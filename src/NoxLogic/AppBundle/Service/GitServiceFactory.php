@@ -3,7 +3,9 @@
 namespace NoxLogic\AppBundle\Service;
 
 use GitStash\Git;
+use GitStash\LoggableGit;
 use NoxLogic\AppBundle\Entity\Repository;
+use NoxLogic\AppBundle\Logger\GitLogger;
 
 
 /**
@@ -17,12 +19,16 @@ class GitServiceFactory {
     /** @var Git */
     protected $git;
 
+    /** @var GitLogger */
+    protected $logger;
+
     /**
      * @param $basePath
      */
-    function __construct($basePath)
+    function __construct($basePath, GitLogger $logger)
     {
         $this->basePath = $basePath;
+        $this->logger = $logger;
     }
 
     /**
@@ -38,7 +44,9 @@ class GitServiceFactory {
             throw new \InvalidArgumentException('Repository path not found!');
         }
 
-        $git = new Git($path);
+        $git = new LoggableGit($path);
+        $git->setLogger($this->logger);
+
         return new GitService($git);
     }
 

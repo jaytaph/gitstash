@@ -1,9 +1,28 @@
 services:
     # Generic git service factory that can generate Git Services, as they are instantiated per repository
-    git_service_factory:
+    noxlogic.git_service_factory:
         class: NoxLogic\AppBundle\Service\GitServiceFactory
-        arguments: [ "%git_repo_path%" ]
+        arguments: [ "%git_repo_path%", "@noxlogic.git_logger" ]
 
-    repo_service:
+    git_service_factory:
+        alias: noxlogic.git_service_factory
+
+    noxlogic.repo_service:
         class: NoxLogic\AppBundle\Service\RepoService
         arguments: [ @doctrine, "%git_repo_path%" ]
+
+    repo_service:
+        alias: noxlogic.repo_service
+
+    noxlogic.git_logger:
+        class: NoxLogic\AppBundle\Logger\GitLogger
+
+    git_logger:
+        alias: noxlogic.git_logger
+
+    noxlogic.git_collector:
+        class: NoxLogic\AppBundle\DataCollector\GitCollector
+        arguments: [ "@noxlogic.git_logger" ]
+        public: false
+        tags:
+            - { name: data_collector, template: 'NoxLogicAppBundle:DataCollector:template.html.twig', id: "git.collector" }

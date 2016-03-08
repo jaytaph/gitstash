@@ -5,6 +5,7 @@ namespace NoxLogic\AppBundle\Service;
 use GitStash\Git;
 use GitStash\Git\Blob;
 use GitStash\Git\Commit;
+use GitStash\Git\Tag;
 use GitStash\Git\Tree;
 use GitStash\Git\TreeItem;
 
@@ -67,6 +68,24 @@ class GitService {
     }
 
     /**
+     * @param string $ref (tag or head)
+     *
+     * @return Commit
+     */
+    function fetchCommitFromRef($ref)
+    {
+        $object = $this->fetchObject($this->refToSha($ref));
+
+        while (! $object instanceof Commit) {
+            if ($object instanceof Tag) {
+                $object = $this->git->fetchObject($object->getObject());
+            }
+        }
+
+        return $object;
+    }
+
+    /**
      * Get a blob from a given file from a given tree sha
      *
      * @param $sha
@@ -107,17 +126,39 @@ class GitService {
      * @param $sha
      * @return Tree
      */
-    function getTreeFromSha($sha) {
-        $tree = $this->git->fetchObject($sha);
-        if ($tree instanceof Commit) {
-            $tree = $this->git->fetchObject($tree->getTree());
-        }
+    function getTreeFromSha($sha)
+    {
+        $tree = $this->resolveTreeFromObject($sha);
 
         if (! $tree instanceof Tree) {
             throw new \InvalidArgumentException(sprintf("Sha '%s' is not a tree (or commit)", $sha));
         }
 
         return $tree;
+    }
+
+
+    /**
+     * Resolved any object (commit, tree or tag) into an actual tree as found in the tag or commit
+     *
+     * @param $sha
+     * @return Object
+     */
+    protected function resolveTreeFromObject($sha)
+    {
+        $object = $this->git->fetchObject($sha);
+
+        while (! $object instanceof Tree) {
+            if ($object instanceof Commit) {
+                $object = $this->git->fetchObject($object->getTree());
+            }
+
+            if ($object instanceof Tag) {
+                $object = $this->git->fetchObject($object->getObject());
+            }
+        }
+
+        return $object;
     }
 
     /**
@@ -229,16 +270,13 @@ class GitService {
 
         // Iterate until we run out of commits
         while ($commit) {
+            // Break if we have completed all files
+            if (count($todo) == 0) {
+                break;
+            }
             // Fetch tree for given commit
             $rootTree = $this->git->fetchObject($commit->getTree());
             $tree = $this->getTreeFromShaPath($rootTree->getSha(), $path);
-
-//            // First, we need to browse the tree to the correct spot based on path
-//            $pathArray = array_filter(explode("/", trim($path, '/')));
-//            while (count($pathArray)) {
-//                $dir = array_shift($pathArray);
-//                $tree = isset($tree[$dir]) ? $this->git->fetchObject($tree[$dir]->getSha()) : array();
-//            }
 
             // Iterate all items that are left to do
             foreach ($todo as $k => $item) {
@@ -272,10 +310,10 @@ class GitService {
             $commit = $commit->getParent() ? $this->git->fetchObject($commit->getParent()) : null;
         }
 
-        // Sanity check, we should have no more files left in our to do list.
-        if (count($todo) > 0) {
-            throw new \RuntimeException('It seems that we ran out of parent commits, but we still have files in our todo');
-        }
+//        // Sanity check, we should have no more files left in our to do list.
+//        if (count($todo) > 0) {
+//            throw new \RuntimeException('It seems that we ran out of parent commits, but we still have files in our todo: ');
+//        }
 
         // Sort files on directory first, and name next
         uasort($files, function ($a, $b) {

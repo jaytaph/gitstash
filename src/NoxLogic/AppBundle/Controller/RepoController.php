@@ -56,19 +56,20 @@ class RepoController extends Controller
             'repo' => $repo,
             'git' => $gitService,
             'tree' => $gitService->getTreeFromBranchPath($tree, $path),
-            'commit' => $gitService->fetchObject($gitService->refToSha($tree)),
+            'commit' => $gitService->fetchCommitFromRef($tree),
             'branch' => $tree,
             'path' => explode("/", $path),
         ));
     }
 
     /**
-     * Display given file in given tree
+     * Display given blob in given tree
      *
      * @param Request $request
      * @param Repository $repo
      * @param string $tree (ie: master)
      * @param string $path (ie: /)
+     * @param string $file (ie: README.md)
      * @return \Symfony\Component\HttpFoundation\Response
      *
      * @ParamConverter("repo", options={
@@ -77,17 +78,17 @@ class RepoController extends Controller
      *    "map_method_signature" = true
      * })
      */
-    public function viewAction(Request $request, Repository $repo, $tree, $path)
+    public function blobAction(Request $request, Repository $repo, $tree, $path, $file)
     {
         $gitService = $this->get('git_service_factory')->create($repo);
 
-        return $this->render('NoxLogicAppBundle:Repo:view.html.twig', array(
+        return $this->render('NoxLogicAppBundle:Repo:blob.html.twig', array(
             'repo' => $repo,
             'git' => $gitService,
             'tree' => $gitService->getTreeFromBranchPath($tree, $path),
             'branch' => $tree,
             'path' => explode("/", $path),
-            'file' => basename($path),
+            'file' => $file,
         ));
     }
 

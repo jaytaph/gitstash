@@ -15,15 +15,16 @@ user_new_repo:
     defaults: { _controller: NoxLogicAppBundle:User:newRepository }
 
 repo:
-    path:     "/user:{user}/repo:{repo}"
+    path:     "/repo:{user}/{repo}"
     defaults: { _controller: NoxLogicAppBundle:Repo:index }
 
-repo_tree:
-    path:     "/user:{user}/repo:{repo}/tree:{tree}/path:{path}"
-    defaults: { _controller: NoxLogicAppBundle:Repo:tree }
-    requirements: { "path": ".+" }
+# repo_blob_view must be before repo_tree, otherwise, 'view:' will be seen as the path
+repo_blob_view:
+    path:     "/repo:{user}/{repo}/blob:{tree}{path}{file}"
+    defaults: { _controller: NoxLogicAppBundle:Repo:blob }
+    requirements: { "path": ".*" }
 
-repo_tree_view:
-    path:     "/user:{user}/repo:{repo}/tree:{tree}/path:{path}/view"
-    defaults: { _controller: NoxLogicAppBundle:Repo:view }
-    requirements: { "path": ".+" }
+repo_tree:
+    path:     "/repo:{user}/{repo}/tree:{tree}{path}"
+    defaults: { _controller: NoxLogicAppBundle:Repo:tree }
+    requirements: { "path": ".*" }

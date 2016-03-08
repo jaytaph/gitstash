@@ -5,6 +5,7 @@ namespace GitStash;
 use Doctrine\Common\Proxy\Exception\InvalidArgumentException;
 use GitStash\Git\Blob;
 use GitStash\Git\Commit;
+use GitStash\Git\Tag;
 use GitStash\Git\Tree;
 use GitStash\Git\TreeItem;
 
@@ -77,6 +78,9 @@ class Git {
                 break;
             case 'commit' :
                 return $this->readCommit($info);
+                break;
+            case 'tag' :
+                return $this->readTag($info);
                 break;
             case 'tree' :
                 return $this->readTree($info);
@@ -151,6 +155,43 @@ class Git {
         );
     }
 
+    protected function readTag(array $info)
+    {
+        // Read remainder bytes (based on found size)
+        $details = trim(fread($this->pipes[1], $info['size']));
+
+        // Parse headers until first empty \n
+        $commit = array(
+            'object' => null,
+            'type' => null,
+            'tag' => null,
+            'tagger' => null,
+        );
+        do {
+            list($line, $details) = explode("\n", $details, 2);
+
+            if (strlen($line) == 0) break;
+
+            list($type, $type_info) = explode(" ", $line, 2);
+            $commit[$type] = $type_info;
+        } while (strlen($line));
+
+        // Parse commit log line and details (remainder lines)
+        $details = explode("\n", $details, 2);
+        $commit['log'] = $details[0];
+        $commit['log_details'] = isset($details[1]) ? $details[1] : "";
+
+        return new Tag(
+            $info['sha'],
+            $commit['object'],
+            $commit['type'],
+            $commit['tag'],
+            $commit['tagger'],
+            $commit['log'],
+            $commit['log_details']
+        );
+    }
+
     function getRefs($type)
     {
         // Add file system refs
@@ -173,14 +214,16 @@ class Git {
                 // Annotated tag. Information is found in the previous line as well, so we don't do anything with it
                 if ($line[0] == '^') continue;
 
-
                 list($sha, $ref) = explode(" ", $line, 2);
 
                 $a = explode('/', $ref);
+                $refType = $a[1];
                 $a = array_splice($a, 2);
                 $ref = join('/', $a);
-
-                $ret[$ref] = $sha;
+                ;
+                if ($refType == $type) {
+                    $ret[$ref] = $sha;
+                }
             }
         }
 
@@ -198,12 +241,17 @@ class Git {
      * @return string
      */
     function refToSha($ref, $base = 'heads') {
-        $refs = $this->getRefs($base);
-        if (! isset($refs[$ref])) {
-            throw new InvalidArgumentException('Ref $base/$ref not found');
+        $refs = $this->getRefs('heads');
+        if (isset($refs[$ref])) {
+            return $refs[$ref];
         }
 
-        return $refs[$ref];
+        $refs = $this->getRefs('tags');
+        if (isset($refs[$ref])) {
+            return $refs[$ref];
+        }
+
+        throw new InvalidArgumentException(sprintf("Reference %s' not found", $ref));
     }
 
     /**
