@@ -52,13 +52,60 @@ class RepoController extends Controller
     {
         $gitService = $this->get('git_service_factory')->create($repo);
 
+        $branch = $tree; // Or this could be a tag
+        $commit = $gitService->fetchCommitFromRef($tree);
+        $tree = $gitService->getTreeFromBranchPath($tree, $path);
+
+        // Fetch license
+        try {
+            $licenseFile = $gitService->getContentFromTree($commit->getSha(), 'LICENSE');
+            $licenseData = $licenseFile->getContents();
+        } catch (\Exception $e) {
+            $licenseData = "";
+        }
+        $detector = $this->get('noxlogic.license_detector');
+        $license = $detector->detect($licenseData);
+
+
+        $crumbtrail = array();
+
+        if (strlen($path) > 0 && $path[0] == "/") {
+            $path = substr($path, 1);
+        }
+        if ($path == "") {
+            $pathArray = array("");
+        } else {
+            $pathArray = explode("/", $path);
+        }
+        array_unshift($pathArray, "");
+
+        $p = array();
+        foreach ($pathArray as $element) {
+            $p[] = $element;
+            $thisPath = join('/', $p);
+            if ($element == "") {
+                $element = "Root";
+            }
+            $crumbtrail[] = array(
+                'name' => $element,
+                'href' => $this->generateUrl('repo_tree', array(
+                    'user' => $repo->getOwner()->getUsername(),
+                    'repo' => $repo->getName(),
+                    'tree' => $branch,
+                    'path' => $thisPath,
+                )),
+            );
+        }
+
         return $this->render('NoxLogicAppBundle:Repo:tree.html.twig', array(
             'repo' => $repo,
             'git' => $gitService,
-            'tree' => $gitService->getTreeFromBranchPath($tree, $path),
-            'commit' => $gitService->fetchCommitFromRef($tree),
-            'branch' => $tree,
-            'path' => explode("/", $path),
+            'tree' => $tree,
+            'commit' => $commit,
+            'branch' => $branch,
+            'crumbtrail' => $crumbtrail,
+            'path' => $path,
+            'license' => $license,
         ));
     }
 

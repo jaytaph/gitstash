@@ -100,9 +100,9 @@ class Git {
     protected function readTree(array $info)
     {
         // Read remainder bytes (based on found size)
-        $details = trim(fread($this->pipes[1], $info['size']));
+        $details = fread($this->pipes[1], $info['size']);
 
-        preg_match_all('/([0-7]+) ([^\x00]+)\x00(.{20})/s', $details, $matches);
+        preg_match_all('/([0-7]+) ([^\x00]+)\x00(.{20})/sm', $details, $matches);
 
         $tree = array();
         foreach (array_keys($matches[0]) as $k) {
