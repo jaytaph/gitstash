@@ -59,6 +59,13 @@ class Git {
      */
     function fetchObject($sha)
     {
+        list($info, $content) = $this->fetchRawShaData($sha);
+
+        return $this->createObject($info, $content);
+    }
+
+    protected function fetchRawShaData($sha) {
+
         $this->processOpen();
 
         // Write sha to git-cat-file
@@ -71,38 +78,39 @@ class Git {
 
         // Read sha, type, size
         $info = array_combine(array('sha', 'type', 'size'), explode(" ", $info));
+        $content = fread($this->pipes[1], $info['size']);
 
+        return array($info, $content);
+    }
+
+    protected function createObject(array $info, $content)
+    {
         switch ($info['type']) {
             case 'blob' :
-                return $this->readBlob($info);
+                return $this->parseBlob($info, $content);
                 break;
             case 'commit' :
-                return $this->readCommit($info);
+                return $this->parseCommit($info, $content);
                 break;
             case 'tag' :
-                return $this->readTag($info);
+                return $this->parseTag($info, $content);
                 break;
             case 'tree' :
-                return $this->readTree($info);
+                return $this->parseTree($info, $content);
                 break;
         }
 
-        throw new \RuntimeException("Invalid type");
+        throw new \RuntimeException(sprintf("Cannot create object: Invalid type '%s'", $info['type']));
     }
 
-    protected function readBlob(array $info)
+    protected function parseBlob(array $info, $content)
     {
-        $content = fread($this->pipes[1], $info['size']);
-
         return new Blob($info['sha'], $content);
     }
 
-    protected function readTree(array $info)
+    protected function parseTree(array $info, $content)
     {
-        // Read remainder bytes (based on found size)
-        $details = fread($this->pipes[1], $info['size']);
-
-        preg_match_all('/([0-7]+) ([^\x00]+)\x00(.{20})/sm', $details, $matches);
+        preg_match_all('/([0-7]+) ([^\x00]+)\x00(.{20})/sm', $content, $matches);
 
         $tree = array();
         foreach (array_keys($matches[0]) as $k) {
@@ -116,11 +124,8 @@ class Git {
         return new Tree($info['sha'], $tree);
     }
 
-    protected function readCommit(array $info)
+    protected function parseCommit(array $info, $content)
     {
-        // Read remainder bytes (based on found size)
-        $details = trim(fread($this->pipes[1], $info['size']));
-
         // Parse headers until first empty \n
         $commit = array(
             'tree' => null,
@@ -131,7 +136,7 @@ class Git {
             'log_details' => null,
         );
         do {
-            list($line, $details) = explode("\n", $details, 2);
+            list($line, $content) = explode("\n", $content, 2);
 
             if (strlen($line) == 0) break;
 
@@ -140,9 +145,9 @@ class Git {
         } while (strlen($line));
 
         // Parse commit log line and details (remainder lines)
-        $details = explode("\n", $details, 2);
-        $commit['log'] = $details[0];
-        $commit['log_details'] = isset($details[1]) ? $details[1] : "";
+        $content = explode("\n", $content, 2);
+        $commit['log'] = $content[0];
+        $commit['log_details'] = isset($content[1]) ? $content[1] : "";
 
         return new Commit(
             $info['sha'],
@@ -155,11 +160,8 @@ class Git {
         );
     }
 
-    protected function readTag(array $info)
+    protected function parseTag(array $info, $content)
     {
-        // Read remainder bytes (based on found size)
-        $details = trim(fread($this->pipes[1], $info['size']));
-
         // Parse headers until first empty \n
         $commit = array(
             'object' => null,
@@ -168,7 +170,7 @@ class Git {
             'tagger' => null,
         );
         do {
-            list($line, $details) = explode("\n", $details, 2);
+            list($line, $content) = explode("\n", $content, 2);
 
             if (strlen($line) == 0) break;
 
@@ -177,9 +179,9 @@ class Git {
         } while (strlen($line));
 
         // Parse commit log line and details (remainder lines)
-        $details = explode("\n", $details, 2);
-        $commit['log'] = $details[0];
-        $commit['log_details'] = isset($details[1]) ? $details[1] : "";
+        $content = explode("\n", $content, 2);
+        $commit['log'] = $content[0];
+        $commit['log_details'] = isset($content[1]) ? $content[1] : "";
 
         return new Tag(
             $info['sha'],

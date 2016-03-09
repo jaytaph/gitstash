@@ -20,3 +20,6 @@ parameters:
 
     # Where are all the repositories stored?
     git_repo_path:     /home/git
+
+    # Redis caching DSN
+    redis_dsn: redis://localhost

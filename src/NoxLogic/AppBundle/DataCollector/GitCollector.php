@@ -22,29 +22,34 @@ class GitCollector extends DataCollector
     {
         $calls = $this->logger->getCalls();
 
-        usort($calls, function ($a, $b) {
+        usort($calls['nocache'], function ($a, $b) {
             return $a['count'] < $b['count'];
         });
+
+        usort($calls['cache'], function ($a, $b) {
+            return $a['count'] < $b['count'];
+        });
+
 
         $this->data = array(
             'calls' => $calls,
         );
     }
 
-    public function getCount()
+    public function getCount($key)
     {
         $count = 0;
 
-        array_walk($this->data['calls'], function ($e) use (&$count) {
+        array_walk($this->data['calls'][$key], function ($e) use (&$count) {
             $count += $e['count'];
         });
 
         return $count;
     }
 
-    public function getCalls()
+    public function getCalls($key)
     {
-        return $this->data['calls'];
+        return $this->data['calls'][$key];
     }
 
 

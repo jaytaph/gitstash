@@ -73,19 +73,20 @@
         {% endif %}
 
     {% for item in git.treeInfo(commit, path) %}
-         <tr><td>
-            {% set p = "/" ~ path %}
-            {% if item.item.isDir %}
-                {% if p == "/" %}
-                    {% set p = p ~ item.name %}
+         <tr>
+             <td>
+                {% set p = "/" ~ path %}
+                {% if item.item.isDir %}
+                    {% if p == "/" %}
+                        {% set p = p ~ item.name %}
+                    {% else %}
+                        {% set p = p ~ "/" ~ item.name %}
+                    {% endif %}
+                    <i class="fa fa-folder-o"></i> <a href="{{ path('repo_tree', { user: repo.owner.username, repo:repo.name, tree: branch, path: p }) }}">{{ item.name }}</a>
                 {% else %}
-                    {% set p = p ~ "/" ~ item.name %}
+                    <i class="fa fa-file-o"></i> <a href="{{ path('repo_blob_view', { user: repo.owner.username, repo:repo.name, tree: branch, path: p, file: item.name }) }}">{{ item.name }}</a>
                 {% endif %}
-                <i class="fa fa-folder-o"></i> <a href="{{ path('repo_tree', { user: repo.owner.username, repo:repo.name, tree: branch, path: p }) }}">{{ item.name }}</a>
-            {% else %}
-                <i class="fa fa-file-o"></i> <a href="{{ path('repo_blob_view', { user: repo.owner.username, repo:repo.name, tree: branch, path: p, file: item.name }) }}">{{ item.name }}</a>
-            {% endif %}
-        </td>
+             </td>
              <td>{{ item.commit_log }}</td>
              <td><a href="#">{{ item.sha | slice(0, 8)}}</a></td>
              <td><time class="timeago" datetime="{{ item.commit_date|date("c") }}">{{ item.commit_date|date("c") }} {{ item.commit_date|date("Y M d H:i:s") }}</time></td>

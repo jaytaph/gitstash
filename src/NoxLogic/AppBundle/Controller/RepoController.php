@@ -56,16 +56,6 @@ class RepoController extends Controller
         $commit = $gitService->fetchCommitFromRef($tree);
         $tree = $gitService->getTreeFromBranchPath($tree, $path);
 
-        // Fetch license
-        try {
-            $licenseFile = $gitService->getContentFromTree($commit->getSha(), 'LICENSE');
-            $licenseData = $licenseFile->getContents();
-        } catch (\Exception $e) {
-            $licenseData = "";
-        }
-        $detector = $this->get('noxlogic.license_detector');
-        $license = $detector->detect($licenseData);
-
 
         $crumbtrail = array();
 
@@ -105,7 +95,6 @@ class RepoController extends Controller
             'branch' => $branch,
             'crumbtrail' => $crumbtrail,
             'path' => $path,
-            'license' => $license,
         ));
     }
 

@@ -2,7 +2,7 @@ services:
     # Generic git service factory that can generate Git Services, as they are instantiated per repository
     noxlogic.git_service_factory:
         class: NoxLogic\AppBundle\Service\GitServiceFactory
-        arguments: [ "%git_repo_path%", "@noxlogic.git_logger" ]
+        arguments: [ "%git_repo_path%", "@noxlogic.git_logger", "@snc_redis.default" ]
 
     git_service_factory:
         alias: noxlogic.git_service_factory

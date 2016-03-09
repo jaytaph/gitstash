@@ -3,7 +3,7 @@
 {% block toolbar %}
     {% set icon %}
         <span class="icon"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAAGXcA1uAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAglJREFUeNpi/P//PwMMsEBpsAgTAxIACCAGkDIgvgKiWaBKGIH4BUj0BVTWBSCAYMpAuOI/BIAlQQI3/yOAJFTRf2QdL6CSLiA+QAAhSxgiK4S5ywiIXWGOhbnREGrECSCuhrLBEuhAE9lyEEgF4r8wHbCAYEQyH8RmAAggBjQng7A4krEv0OXRvQED9lCxf+ga0RUiAxkgLgZiLyC+D9OIHnrIQBpK/0ISc2HAEexngVgDWSE2PyDjZ+gKYRgggHBpuAzExtjksCl+heQUE0IaHiDFJFZN2NwNSwKu2DRhUwwCsrhswqYYBGKRbMpB1sSAI5ZBGn4CsS9UEyxVPgKlfFMGTMAKxGxAvAmIv0Nz7mcgloP5wQTNBpCYHRL/E7ZQQtYEirRN6IqxxQO6TZ+IiWljXIpBGCDAcKUlbIY8Q8uJJsToZWLAD0Shed8TiCWRxMWB+DS4BGRgMMFnAC4LDIH4GRC/AuJ/0KgDWeQLxAVA/JBoi9C8ZIgjJYJAIJI6RRxqXuDKPPgMRgaJ0HySBdVXRcgikKIb/4kHsdAq5A+Ub43kWhekUhUGboDiIBqIXzKQBv5C6V4g1gViFSDOg1cGEADKatnomeAFHte/BmJTIOYj4OtPhAphXBb5IKlRA+Lf+AwmJqNhs+gvtJgiaDApORmXj/AaTGpRAUvKoOroNhA7E6sPAL+PY+JPDiOJAAAAAElFTkSuQmCC" alt="Git"/></span>
-        <span class="sf-toolbar-status">{{ collector.count }}</span>
+        <span class="sf-toolbar-status">{{ collector.count('nocache') }} / {{ collector.count('cache') }}</span>
     {% endset %}
 
     {% set text %}
@@ -19,13 +19,13 @@
         <span class="icon"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAAGXcA1uAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAglJREFUeNpi/P//PwMMsEBpsAgTAxIACCAGkDIgvgKiWaBKGIH4BUj0BVTWBSCAYMpAuOI/BIAlQQI3/yOAJFTRf2QdL6CSLiA+QAAhSxgiK4S5ywiIXWGOhbnREGrECSCuhrLBEuhAE9lyEEgF4r8wHbCAYEQyH8RmAAggBjQng7A4krEv0OXRvQED9lCxf+ga0RUiAxkgLgZiLyC+D9OIHnrIQBpK/0ISc2HAEexngVgDWSE2PyDjZ+gKYRgggHBpuAzExtjksCl+heQUE0IaHiDFJFZN2NwNSwKu2DRhUwwCsrhswqYYBGKRbMpB1sSAI5ZBGn4CsS9UEyxVPgKlfFMGTMAKxGxAvAmIv0Nz7mcgloP5wQTNBpCYHRL/E7ZQQtYEirRN6IqxxQO6TZ+IiWljXIpBGCDAcKUlbIY8Q8uJJsToZWLAD0Shed8TiCWRxMWB+DS4BGRgMMFnAC4LDIH4GRC/AuJ/0KgDWeQLxAVA/JBoi9C8ZIgjJYJAIJI6RRxqXuDKPPgMRgaJ0HySBdVXRcgikKIb/4kHsdAq5A+Ub43kWhekUhUGboDiIBqIXzKQBv5C6V4g1gViFSDOg1cGEADKatnomeAFHte/BmJTIOYj4OtPhAphXBb5IKlRA+Lf+AwmJqNhs+gvtJgiaDApORmXj/AaTGpRAUvKoOroNhA7E6sPAL+PY+JPDiOJAAAAAElFTkSuQmCC" alt=""/></span>
         <strong>Git calls</strong>
         <span class="count">
-            <span>{{ collector.count }}</span>
+            <span>{{ collector.count('nocache') }} / {{ collector.count('cache') }}</span>
         </span>
     </span>
 {% endblock %}
 
 {% block panel %}
-    <h2>Git calls</h2>
+    <h2>Git calls (Not cached)</h2>
     <table>
         <tr>
             <th>Count</th>
@@ -33,7 +33,26 @@
             <th>Sha</th>
         </tr>
 
-{% for item in collector.calls %}
+{% for item in collector.calls('nocache') %}
+    <tr>
+        <td>{{ item.count }}</td>
+        <td>{{ item.type }}</td>
+        <td>{{ item.sha }}</td>
+    </tr>
+{% endfor %}
+
+    </table>
+
+
+    <h2>Git calls (Cached)</h2>
+    <table>
+        <tr>
+            <th>Count</th>
+            <th>Type</th>
+            <th>Sha</th>
+        </tr>
+
+{% for item in collector.calls('cache') %}
     <tr>
         <td>{{ item.count }}</td>
         <td>{{ item.type }}</td>

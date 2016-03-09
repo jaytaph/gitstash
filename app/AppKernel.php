@@ -18,6 +18,7 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
             new Ornicar\GravatarBundle\OrnicarGravatarBundle(),
             new FOS\UserBundle\FOSUserBundle(),
+            new Snc\RedisBundle\SncRedisBundle(),
             new Knp\Bundle\MarkdownBundle\KnpMarkdownBundle(),
             new NoxLogic\AppBundle\NoxLogicAppBundle(),
         );

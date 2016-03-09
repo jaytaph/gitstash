@@ -274,6 +274,7 @@ class GitService {
             if (count($todo) == 0) {
                 break;
             }
+
             // Fetch tree for given commit
             $rootTree = $this->git->fetchObject($commit->getTree());
             $tree = $this->getTreeFromShaPath($rootTree->getSha(), $path);
@@ -310,10 +311,6 @@ class GitService {
             $commit = $commit->getParent() ? $this->git->fetchObject($commit->getParent()) : null;
         }
 
-//        // Sanity check, we should have no more files left in our to do list.
-//        if (count($todo) > 0) {
-//            throw new \RuntimeException('It seems that we ran out of parent commits, but we still have files in our todo: ');
-//        }
 
         // Sort files on directory first, and name next
         uasort($files, function ($a, $b) {

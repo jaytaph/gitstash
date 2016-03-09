@@ -74,3 +74,11 @@ fos_user:
     db_driver: orm
     firewall_name: main
     user_class: NoxLogic\AppBundle\Entity\User
+
+snc_redis:
+    clients:
+        default:
+            type: predis
+            alias: default
+            dsn: %redis_dsn%
+            logging: false
