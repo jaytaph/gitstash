@@ -54,7 +54,7 @@ class Repository
      *
      * @ORM\Column(name="private", type="boolean")
      */
-    protected $private;
+    protected $private_ = true;
 
 
     /**
@@ -182,15 +182,15 @@ class Repository
      */
     public function isPrivate()
     {
-        return $this->private;
+        return $this->private_;
     }
 
     /**
      * @param boolean $private
      */
-    public function setPrivate($private)
+    public function setPrivate($private_)
     {
-        $this->private = $private;
+        $this->private_ = $private_;
     }
 
 
@@ -201,6 +201,6 @@ class Repository
      */
     public function getPrivate()
     {
-        return $this->private;
+        return $this->private_;
     }
 }
