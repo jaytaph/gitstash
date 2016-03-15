@@ -15,6 +15,27 @@
               padding-top: 75px;
               padding-bottom: 20px;
             }
+
+body:after{
+  z-index: 9999;
+  content: "very beta";
+  position: fixed;
+  width: 180px;
+  height: 25px;
+  background: #ff0000;
+  top: 27px;
+  left: -40px;
+  text-align: center;
+  font-size: 13px;
+  font-family: sans-serif;
+  text-transform: uppercase;
+  font-weight: bold;
+  color: #fff;
+  line-height: 27px;
+  -ms-transform:rotate(-45deg);
+  -webkit-transform:rotate(-45deg);
+  transform:rotate(-45deg);
+}
         </style>
 
         {% block stylesheets %}{% endblock %}
