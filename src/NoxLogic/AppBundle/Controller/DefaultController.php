@@ -18,7 +18,10 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
+        $repos = $this->getDoctrine()->getRepository('NoxLogicAppBundle:Repository')->findRandomRepositories(10);
+
         return $this->render('NoxLogicAppBundle:Default:index.html.twig', array(
+            'repos' => $repos,
         ));
     }
 }

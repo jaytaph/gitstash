@@ -2,4 +2,26 @@
 
 {% block body %}
 
+<h1>Some random public repositories</h1>
+
+<table class="table table-bordered">
+{% for repo_row in repos|batch(3) %}
+    <tr>
+        {% for repo in repo_row %}
+            <td class="col-xs-3 text-center">
+                <h3>
+                    <a href="{{ path('repo', { user: repo.owner.username, repo: repo.name }) }}">{{ repo.owner.username }} / {{ repo.name }}</a>
+                </h3>
+                <img class="center-block img-responsive img-rounded" src="http://lorempixel.com/125/125/?{{ random() }}">
+
+                <p>{{ repo.description }}</p>
+
+                <i class="fa fa-star"></i> {{ random(999) }} stars
+                <i class="fa fa-eye"></i> {{ random(999) }} viewers
+            </td>
+        {% endfor %}
+    </tr>
+{% endfor %}
+</table>
+
 {% endblock %}

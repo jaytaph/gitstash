@@ -4,6 +4,7 @@ namespace NoxLogic\AppBundle\Repository;
 
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\EntityRepository;
+use NoxLogic\AppBundle\Entity\Repository;
 
 /**
  * RepositoryRepository
@@ -13,8 +14,28 @@ use Doctrine\ORM\EntityRepository;
  */
 class RepositoryRepository extends EntityRepository
 {
+    /**
+     * @param int $limit
+     *
+     * @return Repository[]
+     */
+    function findRandomRepositories($limit = 10)
+    {
+        $qb = $this->createQueryBuilder('r');
+        $qb
+            ->select('r', 'o', 'rights')
+            ->addSelect('RAND() as HIDDEN rand')
+            ->join('r.owner', 'o')
+            ->join('r.rights', 'rights')
+            ->orderBy('rand')
+            ->setMaxResults($limit)
+        ;
 
-    function findByUserNameAndRepo($userName, $repoName) {
+        return $qb->getQuery()->getArrayResult();
+    }
+
+    function findByUserNameAndRepo($userName, $repoName)
+    {
         $repo = $this->findOneByName($repoName);
         if (! $repo) {
             throw new EntityNotFoundException();

@@ -28,7 +28,9 @@ class RepoService {
         @mkdir($gitPath, 0777, true);
 
         $process = ProcessBuilder::create(array('git', '--git-dir='.$gitPath, 'init', '--bare'))->getProcess();
-        return $process->mustRun();
+        $process->mustRun();
+
+        return true;
     }
 
     public function getGitPath(Repository $repo)
