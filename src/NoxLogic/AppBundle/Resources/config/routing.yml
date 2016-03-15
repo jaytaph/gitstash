@@ -20,7 +20,7 @@ repo:
 
 # repo_blob_view must be before repo_tree, otherwise, 'view:' will be seen as the path
 repo_blob_view:
-    path:     "/repo:{user}/{repo}/blob:{tree}{path}{file}"
+    path:     "/repo:{user}/{repo}/blob:{tree}{path}"
     defaults: { _controller: NoxLogicAppBundle:Repo:blob }
     requirements: { "path": ".*" }
 

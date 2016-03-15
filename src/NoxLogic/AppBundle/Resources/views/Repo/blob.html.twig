@@ -4,67 +4,39 @@
 
 {% block body %}
 
-    <h3>{{ repo.name }}</h3>
-    <h4>{{ repo.description }}</h4>
-
-    <div class="row">
-        <div class="col-sm-4">
-
-            <form class="form-inline">
-                <div class="form-group">
-                    <label for="branch">Select branch:</label>
-                    <select id="branch_select" class="input-sm form-control">
-                    {% for name, sha in git.branches %}
-                        {% set p = "/" %}
-                        <option data-href="{{ path('repo_tree', { 'user' : repo.owner.username, 'repo' : repo.name, 'tree' : name, 'path' : p }) }}">{{ name }}</option>
-                    {% endfor %}
-                    </select>
-                    <button id="branch_submit" class="form-control btn btn-success btn-xs input-sm">Go <i class="fa fa-play"></i></button>
-                </div>
-            </form>
-
-        </div>
-        <div class="col-sm-4">
-
-            <ul class="breadcrumb">
-              Path:
-              {#<li>&nbsp;</li>#}
-{% for element in path %}
-              <li {% if loop.last %}class="active"{% endif %}><a href="#">{{ element }}</a></li>
-{% endfor %}
-            </ul>
-
-        </div>
-
-        <div class="col-sm-4">
-            <a href="#" class="pull-right btn btn-info btn-sm"><i class="fa fa-balance-scale"></i> BSD 3</a>
-        </div>
-    </div>
+    {% include "NoxLogicAppBundle:Repo:fragments/header.html.twig" %}
 
     <div class="row">
         <div class="col-xs-12">
 
-    {% if git.existsInTree(tree.sha, file) %}
-    <h2>{{ path | join("/") }}</h2>
-    <div class="well">
-        {{ git.contentFromTree(tree.sha, file).contents | markdown }}
-    </div>
-    {% endif %}
+            {% if git.existsInTree(tree.sha, file) %}
+            <h2>{{ path | join("/") }}</h2>
+            <div class="well">
+                <pre><code class="php">{{ git.contentFromTree(tree.sha, file).contents }}</code></pre>
+            </div>
+            {% else %}
+                <div class="well">
+                    {{ dump() }}
+                </div>
+            {% endif %}
 
         </div>
     </div>
 
 {% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+
+    <link rel="stylesheet" href="/components/highlightjs/styles/default.css">
+{% endblock %}
+
 {% block javascripts %}
     {{ parent() }}
 
-    <script>
-        $(document).ready(function() {
-           $('#branch_submit').click(function (e) {
-               window.location = $('#branch_select option:selected').data('href');
-               e.preventDefault();
-           });
-        });
-    </script>
+
+    <script type="text/javascript" src="/components/highlightjs/highlight.pack.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    {% include "NoxLogicAppBundle:Repo:fragments/header_js.html.twig" %}
 {% endblock %}

@@ -1,0 +1,52 @@
+<h3>{{ repo.name }}</h3>
+<h4>{{ repo.description }}</h4>
+
+<div class="row well-sm">
+    <div class="col-sm-4">
+
+        <form class="form-inline">
+            <div class="form-group">
+                <label for="branch">Branch:</label>
+                <select id="branch_select" class="input-sm form-control">
+                {% for name, sha in git.branches %}
+
+                    <option {% if name == branch %}selected{% endif %} data-href="{{ path('repo_tree', { 'user' : repo.owner.username, 'repo' : repo.name, 'tree' : name, 'path' : "/" }) }}">{{ name }}</option>
+                {% endfor %}
+                </select>
+                <button id="branch_submit" class="form-control btn btn-success btn-xs input-sm">Go <i class="fa fa-play"></i></button>
+            </div>
+        </form>
+    </div>
+    <div class="col-sm-4">
+        <form class="form-inline">
+            <div class="form-group">
+                <label for="tag">Tag:</label>
+                <select id="tag_select" class="input-sm form-control">
+                {% for name, sha in git.tags %}
+                    <option {% if name == branch %}selected{% endif %} data-href="{{ path('repo_tree', { 'user' : repo.owner.username, 'repo' : repo.name, 'tree' : name, 'path' : "/" }) }}">{{ name }}</option>
+                {% endfor %}
+                </select>
+                <button id="tag_submit" class="form-control btn btn-success btn-xs input-sm">Go <i class="fa fa-play"></i></button>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-sm-4">
+        <a href="#" class="pull-right btn btn-info btn-sm"><i class="fa fa-balance-scale"></i> BSD 3</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <ul class="breadcrumb">
+          Path:
+{% for element in crumbtrail %}
+          <li {% if loop.last %}class="active"{% endif %}><a href="{{ element.href }}">{{ element.name }}</a></li>
+{% endfor %}
+        </ul>
+    </div>
+</div>
+
+<div class="row well-sm">
+
+</div>

@@ -50,6 +50,40 @@ class RepoController extends Controller
      */
     public function treeAction(Request $request, Repository $repo, $tree, $path)
     {
+        $vars = $this->getRepoVars($repo, $tree, $path);
+
+        return $this->render('NoxLogicAppBundle:Repo:tree.html.twig', $vars);
+    }
+
+    /**
+     * Display given blob in given tree
+     *
+     * @param Request $request
+     * @param Repository $repo
+     * @param string $tree (ie: master)
+     * @param string $path (ie: /)
+     * @param string $file (ie: README.md)
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @ParamConverter("repo", options={
+     *    "repository_method" = "findByUserNameAndRepo",
+     *    "mapping": {"user": "userName", "repo": "repoName"},
+     *    "map_method_signature" = true
+     * })
+     */
+    public function blobAction(Request $request, Repository $repo, $tree, $path)
+    {
+        $file = basename($path);
+        $path = dirname($path);
+
+        $vars = $this->getRepoVars($repo, $tree, $path);
+        $vars['file'] = $file;
+
+        return $this->render('NoxLogicAppBundle:Repo:blob.html.twig', $vars);
+    }
+
+    protected function getRepoVars(Repository $repo, $tree, $path)
+    {
         $gitService = $this->get('git_service_factory')->create($repo);
 
         $branch = $tree; // Or this could be a tag
@@ -87,7 +121,7 @@ class RepoController extends Controller
             );
         }
 
-        return $this->render('NoxLogicAppBundle:Repo:tree.html.twig', array(
+        return array(
             'repo' => $repo,
             'git' => $gitService,
             'tree' => $tree,
@@ -95,37 +129,7 @@ class RepoController extends Controller
             'branch' => $branch,
             'crumbtrail' => $crumbtrail,
             'path' => $path,
-        ));
-    }
-
-    /**
-     * Display given blob in given tree
-     *
-     * @param Request $request
-     * @param Repository $repo
-     * @param string $tree (ie: master)
-     * @param string $path (ie: /)
-     * @param string $file (ie: README.md)
-     * @return \Symfony\Component\HttpFoundation\Response
-     *
-     * @ParamConverter("repo", options={
-     *    "repository_method" = "findByUserNameAndRepo",
-     *    "mapping": {"user": "userName", "repo": "repoName"},
-     *    "map_method_signature" = true
-     * })
-     */
-    public function blobAction(Request $request, Repository $repo, $tree, $path, $file)
-    {
-        $gitService = $this->get('git_service_factory')->create($repo);
-
-        return $this->render('NoxLogicAppBundle:Repo:blob.html.twig', array(
-            'repo' => $repo,
-            'git' => $gitService,
-            'tree' => $gitService->getTreeFromBranchPath($tree, $path),
-            'branch' => $tree,
-            'path' => explode("/", $path),
-            'file' => $file,
-        ));
+        );
     }
 
 }
