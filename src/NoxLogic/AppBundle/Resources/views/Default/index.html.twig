@@ -2,7 +2,19 @@
 
 {% block body %}
 
-<h1>Some random public repositories</h1>
+<div class="well">
+    <h1>Welcome to GitStash</h1>
+    <p>GitStash is a open source github / gitlab clone.</p>
+
+    <p>The site is still in very early beta stage, so do <u>not</u>:<p>
+    <ul>
+        <li>Hosting your private repositories.</li>
+        <li>Use it as your "main" git repository.</li>
+        <li>Become dependent on the site.</li>
+    </ul>
+</div>
+
+<h2>Some random public repositories</h2>
 
 <table class="table table-bordered">
 {% for repo_row in repos|batch(3) %}
@@ -10,7 +22,7 @@
         {% for repo in repo_row %}
             <td class="col-xs-3 text-center">
                 <h3>
-                    <a href="{{ path('repo', { user: repo.owner.username, repo: repo.name }) }}">{{ repo.owner.username }} / {{ repo.name }}</a>
+                    <a href="{{ path('repo_tree', { user: repo.owner.username, repo: repo.name, tree: 'master', path: '/' }) }}">{{ repo.owner.username }} / {{ repo.name }}</a>
                 </h3>
                 <img class="center-block img-responsive img-rounded" src="http://lorempixel.com/125/125/?{{ random() }}">
 
