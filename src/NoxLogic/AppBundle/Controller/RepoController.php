@@ -33,6 +33,68 @@ class RepoController extends Controller
         ));
     }
 
+
+    /**
+     * Displays contributors
+     *
+     * @param Request $request
+     * @param Repository $repo
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @ParamConverter("repo", options={
+     *    "repository_method" = "findByUserNameAndRepo",
+     *    "mapping": {"user": "userName", "repo": "repoName"},
+     *    "map_method_signature" = true
+     * })
+     */
+    public function contributorsAction(Request $request, Repository $repo)
+    {
+        $gitService = $this->get('git_service_factory')->create($repo);
+
+        $repoObject = $this->get('noxlogic.data_object_factory')->create($repo);
+        $totalContributors = count($repoObject->getContributors());
+        $contributors = array_slice($repoObject->getContributors(), 0, 24);
+
+        return $this->render('NoxLogicAppBundle:Repo:contributors.html.twig', array(
+            'position' => 0,
+            'total_contributors' => $totalContributors,
+            'repo' => $repoObject,
+            'contributors' => $contributors,
+            'git' => $gitService,
+        ));
+    }
+
+    /**
+     * Displays contributors
+     *
+     * @param Request $request
+     * @param Repository $repo
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @ParamConverter("repo", options={
+     *    "repository_method" = "findByUserNameAndRepo",
+     *    "mapping": {"user": "userName", "repo": "repoName"},
+     *    "map_method_signature" = true
+     * })
+     */
+    public function contributorsAjaxAction(Request $request, Repository $repo, $offset)
+    {
+        $gitService = $this->get('git_service_factory')->create($repo);
+
+        $repoObject = $this->get('noxlogic.data_object_factory')->create($repo);
+        $totalContributors = count($repoObject->getContributors());
+        $contributors = array_slice($repoObject->getContributors(), $offset, 24);
+
+        return $this->render('NoxLogicAppBundle:Repo:fragments/contributors.html.twig', array(
+            'position' => $offset,
+            'total_contributors' => $totalContributors,
+            'repo' => $repoObject,
+            'contributors' => $contributors,
+            'git' => $gitService,
+        ));
+
+    }
+
     /**
      * Display specific tree based on branch/ref.
      *
@@ -122,7 +184,7 @@ class RepoController extends Controller
         }
 
         return array(
-            'repo' => $repo,
+            'repo' => $this->get('noxlogic.data_object_factory')->create($repo),
             'git' => $gitService,
             'tree' => $tree,
             'commit' => $commit,

@@ -18,6 +18,14 @@ repo:
     path:     "/repo:{user}/{repo}"
     defaults: { _controller: NoxLogicAppBundle:Repo:index }
 
+repo_contributors:
+    path:     "/repo:{user}/{repo}/contributors"
+    defaults: { _controller: NoxLogicAppBundle:Repo:contributors }
+
+repo_contributors_ajax:
+    path:     "/_ajax/repo:{user}/{repo}/contributors/{offset}"
+    defaults: { _controller: NoxLogicAppBundle:Repo:contributorsAjax }
+
 # repo_blob_view must be before repo_tree, otherwise, 'view:' will be seen as the path
 repo_blob_view:
     path:     "/repo:{user}/{repo}/blob:{tree}{path}"

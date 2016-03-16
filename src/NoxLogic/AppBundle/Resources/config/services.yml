@@ -26,3 +26,7 @@ services:
         public: false
         tags:
             - { name: data_collector, template: 'NoxLogicAppBundle:DataCollector:template.html.twig', id: "git.collector" }
+
+    noxlogic.data_object_factory:
+        class: NoxLogic\AppBundle\DataObject\DataObjectFactory
+        arguments: [ "@git_service_factory" ]

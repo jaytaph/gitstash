@@ -1,0 +1,22 @@
+{% for contributor_row in contributors|batch(4) %}
+    <div class="row">
+    {% for contributor in contributor_row %}
+        <div class="col-xs-3 text-center">
+            <div class="well-sm" style="background-color: #f8f8ff">
+                {% set position = position + 1 %}
+                <b>#{{ position }} {{ contributor.name }}</b><br>
+                {{ contributor.email }}
+                <img class="center-block img-responsive img-rounded" src="{{ gravatar(contributor.email) }}">
+                <i class="fa fa-line-chart"></i> {{ contributor.count }} commits
+            </div>
+            <br>
+        </div>
+        {% endfor %}
+    </div>
+{% endfor %}
+
+{% if position < total_contributors %}
+<p class="text-center">
+    <a href="{{ path('repo_contributors_ajax', { user: repo.owner.username, repo: repo.name, offset: position }) }}">Show more contributors...</a>
+</p>
+{% endif %}

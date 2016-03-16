@@ -327,4 +327,14 @@ class GitService {
         return $files;
     }
 
+    function getTotalCommits()
+    {
+        return $this->git->getTotalCommits();
+    }
+
+    function getContributors()
+    {
+        return $this->git->getContributors();
+    }
+
 }

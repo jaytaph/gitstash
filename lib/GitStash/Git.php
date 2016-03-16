@@ -277,4 +277,28 @@ class Git {
         throw new InvalidArgumentException('Ref $wantedRef not found in packed refs');
     }
 
+    function getTotalCommits()
+    {
+        exec("git --git-dir=".$this->path." rev-list --all --count", $output);
+        $output = join("", $output);
+
+        return $output;
+    }
+
+    function getContributors()
+    {
+        exec("git --git-dir=".$this->path." log --format='%aE %aN' | sort | uniq -c | sort -rn", $output);
+
+        $contributors = array();
+        foreach ($output as $line) {
+            list($count, $email, $name) = explode(" ", trim($line), 3);
+            $contributors[] = array(
+                'count' => $count,
+                'name' => $name,
+                'email' => $email,
+            );
+        }
+
+        return $contributors;
+    }
 }

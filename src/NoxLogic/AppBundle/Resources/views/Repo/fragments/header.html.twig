@@ -49,10 +49,10 @@
     <div class="col-xs-12">
         <table class="table table-condensed">
             <tr>
-                <td><i class="fa fa-line-chart"></i> {{ random(100)+10 }} commits</td>
-                <td><i class="fa fa-users"></i> {{ random(100)+10 }} contributors</td>
-                <td><i class="fa fa-eye"></i> {{ random(100)+10 }} followers</td>
-                <td><i class="fa fa-star"></i> {{ random(100)+10 }} stars</td>
+                <td><i class="fa fa-line-chart"></i> {{ repo.totalCommits }} commits</td>
+                <td><i class="fa fa-users"></i> <a href="{{ path('repo_contributors', { user: repo.owner.username, repo: repo.name }) }}">{{ repo.contributors | length }} contributors</a></td>
+                <td><i class="fa fa-eye"></i> {{ 0 }} followers</td>
+                <td><i class="fa fa-star"></i> {{ 0 }} stars</td>
             </tr>
         </table>
     </div>
