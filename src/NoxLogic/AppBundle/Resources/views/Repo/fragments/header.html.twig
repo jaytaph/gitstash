@@ -18,6 +18,7 @@
         </form>
     </div>
     <div class="col-sm-4">
+{% if git.tags|length %}
         <form class="form-inline">
             <div class="form-group">
                 <label for="tag">Tag:</label>
@@ -29,14 +30,14 @@
                 <button id="tag_submit" class="form-control btn btn-success btn-xs input-sm">Go <i class="fa fa-play"></i></button>
             </div>
         </form>
+{% endif %}
     </div>
-
     <div class="col-sm-4">
-        <a href="#" class="pull-right btn btn-info btn-sm"><i class="fa fa-balance-scale"></i> BSD 3</a>
+        <a href="#" class="pull-right btn btn-info btn-sm"><i class="fa fa-balance-scale"></i> License</a>
     </div>
 </div>
 
-<div class="row">
+<div class="row well-sm">
     <div class="col-xs-12">
         <ul class="breadcrumb">
           Path:
@@ -45,8 +46,14 @@
 {% endfor %}
         </ul>
     </div>
-</div>
-
-<div class="row well-sm">
-
+    <div class="col-xs-12">
+        <table class="table table-condensed">
+            <tr>
+                <td><i class="fa fa-line-chart"></i> {{ random(100)+10 }} commits</td>
+                <td><i class="fa fa-users"></i> {{ random(100)+10 }} contributors</td>
+                <td><i class="fa fa-eye"></i> {{ random(100)+10 }} followers</td>
+                <td><i class="fa fa-star"></i> {{ random(100)+10 }} stars</td>
+            </tr>
+        </table>
+    </div>
 </div>
