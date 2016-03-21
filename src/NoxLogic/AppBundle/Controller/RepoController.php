@@ -2,6 +2,7 @@
 
 namespace NoxLogic\AppBundle\Controller;
 
+use GitStash\Exception\ReferenceNotFoundException;
 use NoxLogic\AppBundle\Entity\Repository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -112,6 +113,10 @@ class RepoController extends Controller
      */
     public function treeAction(Request $request, Repository $repo, $tree, $path)
     {
+        if (! $this->TreePathExists($repo, $tree, $path)) {
+            return $this->redirect($this->generateUrl('repo', array('user' => $repo->getOwner()->getUsername(), 'repo' => $repo->getName())));
+        }
+
         $vars = $this->getRepoVars($repo, $tree, $path);
 
         return $this->render('NoxLogicAppBundle:Repo:tree.html.twig', $vars);
@@ -135,6 +140,10 @@ class RepoController extends Controller
      */
     public function blobAction(Request $request, Repository $repo, $tree, $path)
     {
+        if (! $this->TreePathExists($repo, $tree, $path)) {
+            return $this->redirect($this->generateUrl('repo', array('user' => $repo->getOwner()->getUsername(), 'repo' => $repo->getName())));
+        }
+
         $file = basename($path);
         $path = dirname($path);
 
@@ -142,6 +151,20 @@ class RepoController extends Controller
         $vars['file'] = $file;
 
         return $this->render('NoxLogicAppBundle:Repo:blob.html.twig', $vars);
+    }
+
+    protected function treePathExists(Repository $repo, $tree, $path = null)
+    {
+        $gitService = $this->get('git_service_factory')->create($repo);
+
+        try {
+            $gitService->refToSha($tree);
+            $tree = $gitService->getTreeFromBranchPath($tree, $path);
+        } catch (ReferenceNotFoundException $e) {
+            return false;
+        }
+
+        return true;
     }
 
     protected function getRepoVars(Repository $repo, $tree, $path)

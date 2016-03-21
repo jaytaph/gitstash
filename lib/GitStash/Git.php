@@ -2,12 +2,12 @@
 
 namespace GitStash;
 
-use Doctrine\Common\Proxy\Exception\InvalidArgumentException;
+use GitStash\Exception\InvalidGitObjectException;
+use GitStash\Exception\ReferenceNotFoundException;
 use GitStash\Git\Blob;
 use GitStash\Git\Commit;
 use GitStash\Git\Tag;
 use GitStash\Git\Tree;
-use GitStash\Git\TreeItem;
 
 class Git {
 
@@ -100,7 +100,7 @@ class Git {
                 break;
         }
 
-        throw new \RuntimeException(sprintf("Cannot create object: Invalid type '%s'", $info['type']));
+        throw new InvalidGitObjectException(sprintf("Cannot create object: Invalid type '%s'", $info['type']));
     }
 
     protected function parseBlob(array $info, $content)
@@ -253,7 +253,7 @@ class Git {
             return $refs[$ref];
         }
 
-        throw new InvalidArgumentException(sprintf("Reference %s' not found", $ref));
+        throw new ReferenceNotFoundException(sprintf("Reference %s' not found", $ref));
     }
 
     /**
@@ -274,7 +274,7 @@ class Git {
             }
         }
 
-        throw new InvalidArgumentException('Ref $wantedRef not found in packed refs');
+        throw new ReferenceNotFoundException('Ref $wantedRef not found in packed refs');
     }
 
     function getTotalCommits()
