@@ -1,0 +1,19 @@
+<script>
+    $(document).ready(function() {
+        $("button#submitSshKeyButton").click(function(e) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('user_settings_sshkey_ajax') }}",
+                data: $('form[name="ssh_key_form"]').serialize(),
+                success: function (msg) {
+                    $("#sshKeyModal").modal('hide');
+                },
+                error: function () {
+                    alert("cannot insert key");
+                }
+            });
+
+            e.preventDefault();
+        });
+    });
+</script>

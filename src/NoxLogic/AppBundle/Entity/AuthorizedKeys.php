@@ -43,6 +43,13 @@ class AuthorizedKeys
      */
     protected $user;
 
+    /**
+     * @var string Label of key
+     *
+     * @ORM\Column(name="label", type="string", length=100)
+     */
+    protected $label;
+
 
     /**
      * Get id
@@ -153,4 +160,21 @@ class AuthorizedKeys
     {
         return $this->fingerprint;
     }
+
+    /**
+     * @return string
+     */
+    public function getLabel()
+    {
+        return $this->label;
+    }
+
+    /**
+     * @param string $label
+     */
+    public function setLabel($label)
+    {
+        $this->label = $label;
+    }
+
 }

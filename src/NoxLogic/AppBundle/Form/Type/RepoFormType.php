@@ -20,25 +20,26 @@ class RepoFormType extends AbstractType
                 'attr' => array('placeholder' => 'Repository name'),
             ))
             ->add('description', TextType::class, array(
-                'required' => false,
                 'attr' => array('placeholder' => 'Description'),
             ))
             ->add('visibility', ChoiceType::class, array(
                 'attr' => array('placeholder' => 'Visibility'),
                 'expanded' => true,
                 'choices' => array(
-                    'private' => 'Private repository',
-                    'public' => 'Public repository',
+                    'Public repository' => 'public',
+                    'Private repository' => 'private',
                 ),
+                'data' => 'public',
                 'choices_as_values' => true,
                 'mapped' => false,
             ))
             ->add('initialize', ChoiceType::class, array(
                 'attr' => array('placeholder' => 'Initialize repository?'),
                 'choices' => array(
-                    'yes',
-                    'no',
+                    'Yes' => true,
+                    'No' => false,
                 ),
+                'data' => false,
                 'choices_as_values' => true,
                 'mapped' => false,
             ))

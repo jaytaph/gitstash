@@ -22,7 +22,7 @@
         <tbody>
 {% for key in user.sshKeys %}
         <tr>
-            <td>username@server.dev<br><small>{{ key.fingerprint | split('', 2) | join(":") | upper }}</small></td>
+            <td>{{ key.label }}<br><small>{{ key.fingerprint | split('', 2) | join(":") | upper }}</small></td>
             <td>
 {% if app.user.lastLogin %}
                 <time class="timeago" datetime="{{ app.user.lastLogin |date("c") }}">{{ app.user.lastLogin|date("c") }} {{ app.user.lastLogin|date("Y M d H:i:s") }}</time>
@@ -30,11 +30,13 @@
     Never
 {% endif %}
             </td>
-            <td><button class="btn btn-xs btn-danger">Remove key</button></td>
+            <td><button class="btn btn-xs btn-danger"><i class="fa fa-trash"></i> Remove</button></td>
         </tr>
 {% endfor %}
     </table>
-    <button class="btn btn-xs btn-success">Add new SSH key</button>
+    <button class="btn btn-success" data-toggle="modal" data-target="#sshKeyModal"><i class="fa fa-key"></i> Add new SSH key</button>
+
+    {% include "NoxLogicAppBundle:User:fragments/sshkeymodal.html.twig" %}
 
 {% endblock %}
 
@@ -47,4 +49,6 @@
             jQuery("time.timeago").timeago();
         });
     </script>
+
+    {% include "NoxLogicAppBundle:User:fragments/sshkeymodal-js.html.twig" %}
 {% endblock %}

@@ -2,12 +2,16 @@
 
 namespace NoxLogic\AppBundle\Controller;
 
+use NoxLogic\AppBundle\Entity\AuthorizedKeys;
 use NoxLogic\AppBundle\Entity\Repository;
 use NoxLogic\AppBundle\Entity\User;
 use NoxLogic\AppBundle\Form\Type\RepoFormType;
+use NoxLogic\AppBundle\Form\Type\SshKeyFormType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
 class UserController extends Controller
 {
@@ -38,9 +42,40 @@ class UserController extends Controller
     {
         $user = $this->getUser();
 
+        $form = $this->createForm(SshKeyFormType::class);
+
         return $this->render('NoxLogicAppBundle:User:settings.html.twig', array(
             'user' => $user,
+            'sshkeyForm' => $form->createView(),
         ));
+    }
+
+    public function sshkeyAjaxAction(Request $request)
+    {
+        $user = $this->getUser();
+
+        $form = $this->createForm(SshKeyFormType::class);
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+
+            $sshKey = new AuthorizedKeys();
+            $sshKey->setSshkey($form->get('key')->getData());
+            $sshKey->setLabel($form->get('label')->getData());
+            $sshKey->setUser($user);
+
+            $pubKeyService = new \GitStash\Ssh\PubKey($form->get('key')->getData());
+            $sshKey->setFingerprint($pubKeyService->getFingerprint());
+
+            $manager = $this->getDoctrine()->getManager();
+            $manager->persist($sshKey);
+            $manager->flush();
+
+            // Add new key
+            return new JsonResponse(array(), 200);
+        }
+
+        return new JsonResponse(array('error' => 'incorrect data'), 400);
     }
 
     /**
@@ -64,7 +99,7 @@ class UserController extends Controller
             $result = $repositoryService->create($user, $repo);
 
             if ($result) {
-                $this->redirect($this->generateUrl('user', array('user' => $user)));
+                return $this->redirect($this->generateUrl('repo', array('user' => $user->getUsername(), 'repo' => $repo->getName())));
             }
         }
 

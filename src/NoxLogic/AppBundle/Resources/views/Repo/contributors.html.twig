@@ -4,8 +4,10 @@
 
 {% block body %}
 
-    <h3>Repo name: {{ repo.name }}</h3>
-    <h4>Repo description: {{ repo.description }}</h4>
+    <div class="well-sm">
+        <h3>Repo: {{ repo.name }}</h3>
+        <h4>{{ repo.description }}</h4>
+    </div>
 
     <p>A list of all contributors of this repository based on commits.</p>
 
