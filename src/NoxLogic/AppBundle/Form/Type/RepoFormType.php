@@ -30,11 +30,16 @@ class RepoFormType extends AbstractType
                     'private' => 'Private repository',
                     'public' => 'Public repository',
                 ),
+                'choices_as_values' => true,
                 'mapped' => false,
             ))
             ->add('initialize', ChoiceType::class, array(
                 'attr' => array('placeholder' => 'Initialize repository?'),
-                'choices' => array('yes', 'no'),
+                'choices' => array(
+                    'yes',
+                    'no',
+                ),
+                'choices_as_values' => true,
                 'mapped' => false,
             ))
         ;

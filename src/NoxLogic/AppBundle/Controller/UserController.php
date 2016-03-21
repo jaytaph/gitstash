@@ -55,7 +55,7 @@ class UserController extends Controller
     public function newRepositoryAction(Request $request, User $user)
     {
         $repo = new Repository();
-        $form = $this->createform(new RepoFormType(), $repo);
+        $form = $this->createform(RepoFormType::class, $repo);
 
         $form->handleRequest($request);
         if ($form->isValid()) {
