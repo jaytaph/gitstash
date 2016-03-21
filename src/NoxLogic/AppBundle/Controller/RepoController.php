@@ -159,7 +159,7 @@ class RepoController extends Controller
 
         try {
             $gitService->refToSha($tree);
-            $tree = $gitService->getTreeFromBranchPath($tree, $path);
+            $gitService->getTreeFromBranchPath($tree, $path);
         } catch (ReferenceNotFoundException $e) {
             return false;
         }
