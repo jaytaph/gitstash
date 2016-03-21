@@ -38,12 +38,12 @@ class RepositoryRepository extends EntityRepository
     {
         $repo = $this->findOneByName($repoName);
         if (! $repo) {
-            throw new EntityNotFoundException();
+            return null;
         }
 
         // Check if owner is username
         if ($repo->getOwner()->getUsernameCanonical() != $userName) {
-            throw new EntityNotFoundException();
+            return null;
         }
 
         return $repo;
