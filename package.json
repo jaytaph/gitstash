@@ -4,6 +4,6 @@
     "private": true,
     "description": "Gitstash",
     "devDependencies": {
-        "bower": "~1.7.0"
+        "bower": "~1.8.8"
     }
 }
